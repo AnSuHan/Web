@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="welcome_message"></title>
+</head>
+<body>
+    <p data-i18n="description"></p>
+    <hr size="3">
+    <!-- 존재하지 않는 키-->
+    <p data-i18n="unknown_key"></p>
+    <hr size="3">
+
+    <!-- 언어 변경 -->
+    <select id="lang-select">
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+      </select>
+
+
+    <!-- 번역 관련 스크립트 -->
+    <script type="module">
+        import { changeLanguage } from './locales/translationModule.js';
+
+        window.addEventListener('DOMContentLoaded', async () => {
+        // URL에서 language 파라미터 값 얻기
+        const urlParams = new URLSearchParams(window.location.search);
+        let defaultLang = urlParams.get('language');
+
+        // language 파라미터가 없거나 지원하지 않는 값이면 기본을 en으로 설정
+        if (!defaultLang || (defaultLang !== 'en' && defaultLang !== 'ko')) {
+            defaultLang = 'en';
+        }
+
+        // 언어 변경 함수 호출
+        await changeLanguage(defaultLang);
+
+        // 언어 선택 셀렉터가 있다면 선택값 변경 (있으면)
+        const langSelectElem = document.getElementById('lang-select');
+        if (langSelectElem) {
+            langSelectElem.value = defaultLang;
+            langSelectElem.addEventListener('change', async (e) => {
+            await changeLanguage(e.target.value);
+            // URL의 language 파라미터를 바꿔서 페이지를 리로드하거나
+            // 히스토리 API를 이용해 깨끗하게 URL을 변경할 수 있음
+            });
+        }
+        });
+    </script>
+</body>
+</html>
